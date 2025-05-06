@@ -23,11 +23,17 @@ router.get('/:cid', async (req, res) => {
 // POST /api/carts/:cid/product/:pid - adiciona um produto ao carrinho
 router.post('/:cid/product/:pid', async (req, res) => {
   const { cid, pid } = req.params;
-  const updatedCart = await cartManager.addProductToCart(cid, pid);
-  if (!updatedCart) {
-    return res.status(404).json({ error: 'Carrinho não encontrado' });
+  try {
+    const updatedCart = await cartManager.addProductToCart(cid, pid);
+    if (!updatedCart) {
+      return res.status(404).json({ error: 'Carrinho ou Produto não encontrado' });
+    }
+
+    res.status(200).json(updatedCart);
+  } catch (error) {
+    console.error('Erro ao adicionar produto ao carrinho:', error);
+    res.status(500).json({ error: 'Erro interno ao adicionar produto ao carrinho' });
   }
-  res.json(updatedCart);
 });
 
 export default router;

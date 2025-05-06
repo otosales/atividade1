@@ -1,12 +1,12 @@
 [
   {
     "id": "1746017642193",
-    "title": "Teclado Mecânico RGB",
+    "title": "Teclado Mecânico RGB Atualizado",
     "description": "Teclado com switches blue e iluminação RGB.",
     "code": "TK123",
-    "price": 299.9,
+    "price": 249.9,
     "status": true,
-    "stock": 20,
+    "stock": 15,
     "category": "periféricos",
     "thumbnails": [
       "teclado1.png",

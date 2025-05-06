@@ -44,30 +44,38 @@ router.post('/', async (req, res) => {
 
 // PUT /api/products/:pid - atualizar um produto
 router.put('/:pid', async (req, res) => {
-  const { pid } = req.params;
-  const updates = req.body;
+  try {
+    const { pid } = req.params;
+    const updates = req.body;
 
-  if (updates.id) {
-    return res.status(400).json({ error: 'Não é permitido atualizar o ID do produto' });
+    if (updates.id) {
+      return res.status(400).json({ error: 'Não é permitido atualizar o ID do produto' });
+    }
+
+    const updatedProduct = await productManager.updateProduct(pid, updates);
+    if (!updatedProduct) {
+      return res.status(404).json({ error: 'Produto não encontrado' });
+    }
+
+    res.json(updatedProduct);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro interno no servidor', details: error.message });
   }
-
-  const updatedProduct = await productManager.updateProduct(pid, updates);
-  if (!updatedProduct) {
-    return res.status(404).json({ error: 'Produto não encontrado' });
-  }
-
-  res.json(updatedProduct);
 });
 
 // DELETE /api/products/:pid - deletar um produto
 router.delete('/:pid', async (req, res) => {
-  const { pid } = req.params;
-  const success = await productManager.deleteProduct(pid);
-  if (!success) {
-    return res.status(404).json({ error: 'Produto não encontrado' });
+  try {
+    const { pid } = req.params;
+    const result = await productManager.deleteProduct(pid);
+    if (!result) {
+      return res.status(404).json({ error: 'Produto não encontrado' });
+    }
+    res.json({ message: 'Produto removido com sucesso' });
+  } catch (error) {
+    console.error('Erro ao remover produto:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
   }
-
-  res.json({ message: 'Produto removido com sucesso' });
 });
 
 export default router;

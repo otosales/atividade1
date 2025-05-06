@@ -1,3 +1,5 @@
+import ProductManager from './ProductManager.js';
+const productManager = new ProductManager('./src/data/products.json');
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -43,17 +45,22 @@ export default class CartManager {
 
   async addProductToCart(cartId, productId) {
     const carts = await this.#readFile();
-    const cart = carts.find(c => c.id === cartId);
-    if (!cart) return null;
+  const products = await productManager.getProducts(); // precisa do productManager importado
 
-    const productIndex = cart.products.findIndex(p => p.product === productId);
-    if (productIndex !== -1) {
-      cart.products[productIndex].quantity += 1;
-    } else {
-      cart.products.push({ product: productId, quantity: 1 });
-    }
+  const cart = carts.find(c => c.id === cartId);
+  const productExists = products.find(p => p.id === productId);
 
-    await this.#writeFile(carts);
-    return cart;
+  if (!cart || !productExists) return null;
+
+  const productInCart = cart.products.find(p => p.product === productId);
+
+  if (productInCart) {
+    productInCart.quantity += 1;
+  } else {
+    cart.products.push({ product: productId, quantity: 1 });
+  }
+
+  await this.#writeFile(carts);
+  return cart;
   }
 }
